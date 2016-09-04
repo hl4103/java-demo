@@ -1,5 +1,6 @@
 package com.hlql.solar;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -11,26 +12,60 @@ public class Planet extends Star {
 	double speed; // 速度
 	double degree; // 角度
 	Star center;
+	boolean satellite;
 
 	@Override
 	public void draw(Graphics g) {
-		g.drawImage(img, (int) x, (int) y, null);
+		super.draw(g);
+		if (!satellite) {
+			drawTrace(g);
+		}
+		move();
+	}
 
-		x = center.x + longAxis * Math.cos(degree);
-		y = center.y + shortAxis * Math.sin(degree);
+	/**
+	 * 画运行轨迹
+	 * 
+	 * @param g
+	 */
+	public void drawTrace(Graphics g) {
+		double ovalX, ovalY, ovalWidth, ovalHeight;
+		ovalWidth = longAxis * 2;
+		ovalHeight = shortAxis * 2;
+
+		ovalX = center.x + center.width / 2 - longAxis;
+		ovalY = center.y + center.height / 2 - shortAxis;
+
+		Color c = g.getColor();
+		g.setColor(Color.blue);
+		g.drawOval((int) ovalX, (int) ovalY, (int) ovalWidth, (int) ovalHeight);
+		g.setColor(c);
+	}
+
+	/**
+	 * 移动方式
+	 */
+	public void move() {
+		x = (center.x + center.width / 2) + longAxis * Math.cos(degree);
+		y = (center.y + center.height / 2) + shortAxis * Math.sin(degree);
 
 		degree += speed;
 	}
 
 	public Planet(String imgPath, double longAxis, double shortAxis, double speed, Star center) {
+		super(GameUtil.getImage(imgPath));
 		this.center = center;
 		this.x = center.x + longAxis;
 		this.y = center.y;
 		// this.img = GameUtil.getImage(imgPath);
-		super(img);
 		this.longAxis = longAxis;
 		this.shortAxis = shortAxis;
 		this.speed = speed;
+	}
+
+	public Planet(String imgPath, double longAxis, double shortAxis, double speed, Star center, boolean satellite) {
+		this(imgPath, longAxis, shortAxis, speed, center);
+		this.satellite = satellite;
 	}
 
 
