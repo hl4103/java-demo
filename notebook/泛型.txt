@@ -1,0 +1,44 @@
+一. 一张图
+            <<interface>>
+            collection
+              /         \
+        <<interface>>   <<interface>>                  <<interface>>
+              Set             List                           Map
+               |           /        \                         |
+            HashSet     LinkedList  ArrayList             HashMap
+
+
+二. 三个知识点
+    1. 迭代器
+        a. java.util.Iterator + hasNext() next() remove()
+        b. foreach: java.lang.Iterable + iterator()
+    2. 比较器
+        a. 实体类可以排序 java.lang.Comparable + compareTo
+        b. 排序比较器(解耦, 多种排序规则) java.util.Comparator + compare
+            List + Collections.sort()
+            TreeSet
+            TreeMap
+    3. 泛型 : <>
+        泛型类, 泛型方法, 泛型接口 泛型擦除 通配符? extends super 泛型嵌套
+
+三. 六个接口
+    Collection Set List Map Iterator Comparable
+
+四. 九个常用类 (添加, 删除, 修改, 查看, 遍历)
+    1. ArrayList: 数组 查看多于修改
+        add(元素) add(索引, 元素) remove(element) set(index, element) get(index)
+        for + get foreach() Iterator ListIterator
+    2. LinkedList: 链表, 修改多于查看, 多了些链头与链尾的方法
+    3. HashSet: 重写 hashcode + equals
+        add(element) remove(element)
+        foreach() Iterator
+    4. TreeSet: 元素可以排序 或者提供排序的业务类
+    5. HashMap: 键不能重复 必须重写 hashcode + equals, 值可以重复
+        put(key, value) remove(key) get(key) containsKey containsValue
+        a. 获取值: values() keySet() + get  entrySet() + getValue()
+        b. 获取键: keySet entrySet() + getKey()
+        c. 获取键与值: keySet() + get entrySet() + getKey() getValue()
+    6. Properties: 资源配置文件 相对路径获取文件
+    7. Hashtable: 键与值都不能为null 线程安全
+    8. Stack: 栈
+    9. Collections: 工具类
