@@ -1,103 +1,59 @@
 package com.hlql.http;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Server {
+	private ServerSocket server;
 
-	private List<MyChannel> members = new ArrayList<MyChannel>();
-	
-	public static void main(String[] args) throws UnknownHostException, IOException {
-		new Server().start();
+	public static void main(String[] args) {
+		Server server = new Server();
+		server.start();
 	}
 
-	public void start() throws IOException {
-		ServerSocket server = new ServerSocket(9999);
-		while (true) {
-			Socket client = server.accept();
-			MyChannel channel = new MyChannel(client);
-			members.add(channel);
-			new Thread(channel).start();
+	/**
+	 * 启动
+	 */
+	public void start() {
+		try {
+			this.server = new ServerSocket(9999);
+			this.receive();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * 成员内部类
-	 * 
-	 * @author tom
-	 *
+	 * 接受客户端
 	 */
-	private class MyChannel implements Runnable {
+	private void receive() {
+		try {
+			Socket client = this.server.accept();
+			String msg = null;
+			StringBuilder sb = new StringBuilder();
 
-		private DataInputStream dis;
-		private DataOutputStream dos;
-		private boolean isRunning = true;
-
-		public MyChannel(Socket client) {
-			try {
-				dis = new DataInputStream(client.getInputStream());
-				dos = new DataOutputStream(client.getOutputStream());
-			} catch (IOException e) {
-				// e.printStackTrace();
-				close();
+			// 存在问题,不能接收到post请求的数据
+			BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			while ((msg = reader.readLine()).length() > 0) {
+				sb.append(msg);
+				sb.append("\r\n");
+				if (null == msg) {
+					break;
+				}
 			}
+			// 接受客户端的请求信息
+			String requestInfo = sb.toString().trim();
+			System.out.println(requestInfo);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+	}
 
-		private String receive() {
-			String msg = "";
-			try {
-				msg = dis.readUTF();
-			} catch (IOException e) {
-				// e.printStackTrace();
-				close();
-			}
-			return msg;
-		}
+	public void stop() {
 
-		private void send(String msg) {
-			if (null == msg || msg.equals("")) {
-				return;
-			}
-			try {
-				dos.writeUTF(msg);
-				dos.flush();
-			} catch (IOException e) {
-				// e.printStackTrace();
-				close();
-			}
-		}
-
-		/**
-		 * 发送给其它客户端
-		 */
-		private void sendOthers() {
-			String msg = receive();
-			for (MyChannel other : members) {
-				if (other == this)
-					continue;
-				other.send(msg);
-			}
-		}
-
-		@Override
-		public void run() {
-			while (isRunning) {
-				// send(receive());
-				sendOthers();
-			}
-		}
-
-		public void close() {
-			isRunning = false;
-			CloseUtil.closeAll(dis, dos);
-			members.remove(this);
-		}
 	}
 
 }
