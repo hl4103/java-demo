@@ -7,6 +7,7 @@ import javassist.CtField;
 import javassist.CtMethod;
 
 public class Demo04 {
+
 	public static void main(String[] args) throws Exception {
 		ClassPool pool = ClassPool.getDefault();
 		CtClass cc = pool.makeClass("com.hlql.notebook.Emp");
